@@ -175,7 +175,7 @@ Each port and generic is an instance of :py:class:`~hdlparse.verilog_parser.Veri
   import hdlparse.verilog_parser as vlog
 
   vlog_ex = vlog.VerilogExtractor()
-  vlog_mods = vlog_ex.extract_objects_from_source('example.v')
+  vlog_mods = vlog_ex.extract_objects('example.v')
 
   for m in vlog_mods:
     print('Module "{}":'.format(m.name))
