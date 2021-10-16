@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; pyHDLParser 1.0.7 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Index" href="genindex.html" />
+    <link rel="prev" title="Getting" href="getting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyHDLParser
+          </a>
+              <div class="version">
+                1.0.7
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting.html">Getting</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vhdl">VHDL</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vhdl-arrays">VHDL arrays</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#verilog">Verilog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hdlparse">Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-hdlparse.minilexer">hdlparse.minilexer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-hdlparse.verilog_parser">hdlparse.verilog_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-hdlparse.vhdl_parser">hdlparse.vhdl_parser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyHDLParser</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+        
+          
+            <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Usage</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/hdl/pyHDLParser/blob/doc-btd/doc/usage.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The pyHDLParser library has two main modules <a class="reference internal" href="#module-hdlparse.vhdl_parser" title="hdlparse.vhdl_parser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vhdl_parser</span></code></a> and <a class="reference internal" href="#module-hdlparse.verilog_parser" title="hdlparse.verilog_parser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">verilog_parser</span></code></a>.
+You import one or both of them as needed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdlparse.vhdl_parser</span> <span class="k">as</span> <span class="nn">vhdl</span>
+<span class="kn">import</span> <span class="nn">hdlparse.verilog_parser</span> <span class="k">as</span> <span class="nn">vlog</span>
+</pre></div>
+</div>
+<p>Within each module are extractor classes <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlExtractor" title="hdlparse.vhdl_parser.VhdlExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">VhdlExtractor</span></code></a> and
+<a class="reference internal" href="#hdlparse.verilog_parser.VerilogExtractor" title="hdlparse.verilog_parser.VerilogExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerilogExtractor</span></code></a> that are the central mechanisms for using pyHDLParser.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vhdl_ex</span> <span class="o">=</span> <span class="n">vhdl</span><span class="o">.</span><span class="n">VhdlExtractor</span><span class="p">()</span>
+<span class="n">vlog_ex</span> <span class="o">=</span> <span class="n">vlog</span><span class="o">.</span><span class="n">VerilogExtractor</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="vhdl">
+<h2>VHDL<a class="headerlink" href="#vhdl" title="Permalink to this headline">¶</a></h2>
+<p>The VHDL parser can extract a variety of different objects from sourec code.
+It can be used to access package definitions and component declarations,type and subtype definitions, functions, and
+procedures found within a package.
+It will not process entity declarations or nested subprograms and types.</p>
+<p>Extraction proceeds as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+  <span class="n">code</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">vhdl_objs</span> <span class="o">=</span> <span class="n">vhdl_ex</span><span class="o">.</span><span class="n">extract_objects_from_source</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+<span class="n">vhdl_objs</span> <span class="o">=</span> <span class="n">vhdl_ex</span><span class="o">.</span><span class="n">extract_objects</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These will extract a list of all supported object types.
+The result is a list of objects subclassed from <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">VhdlObject</span></code></a>.
+You can pass an optional subclass of <code class="docutils literal notranslate"><span class="pre">VhdlObject</span></code> to filter the results for just that type.
+Repeated calls are more efficient when using <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlExtractor.extract_objects" title="hdlparse.vhdl_parser.VhdlExtractor.extract_objects"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extract_objects()</span></code></a> which
+maintains a cache of all previously parsed objects in the extractor.</p>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">package</span> <span class="n">example</span> <span class="k">is</span>
+  <span class="k">component</span> <span class="nc">demo</span> <span class="k">is</span>
+    <span class="k">generic</span> <span class="p">(</span>
+      <span class="n">GENERIC1</span><span class="o">:</span> <span class="kt">boolean</span> <span class="o">:=</span> <span class="n">false</span><span class="p">;</span>
+      <span class="n">GENERIC2</span><span class="o">:</span> <span class="kt">integer</span> <span class="o">:=</span> <span class="mi">100</span>
+    <span class="p">);</span>
+    <span class="k">port</span> <span class="p">(</span>
+      <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_ulogic</span> <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+      <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_ulogic_vector</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="o">:</span> <span class="k">inout</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">);</span>
+  <span class="k">end</span> <span class="k">component</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">package</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Each port and generic is an instance of <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlParameter" title="hdlparse.vhdl_parser.VhdlParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">VhdlParameter</span></code></a> containing the name, mode
+(input, output, inout), and type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdlparse.vhdl_parser</span> <span class="k">as</span> <span class="nn">vhdl</span>
+<span class="kn">from</span> <span class="nn">hdlparse.vhdl_parser</span> <span class="kn">import</span> <span class="n">VhdlComponent</span>
+
+<span class="n">vhdl_ex</span> <span class="o">=</span> <span class="n">vhdl</span><span class="o">.</span><span class="n">VhdlExtractor</span><span class="p">()</span>
+<span class="n">vhdl_comps</span> <span class="o">=</span> <span class="n">vhdl_ex</span><span class="o">.</span><span class="n">extract_objects</span><span class="p">(</span><span class="s1">&#39;example.vhdl&#39;</span><span class="p">,</span> <span class="n">VhdlComponent</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">vhdl_comps</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Component &quot;</span><span class="si">{}</span><span class="s1">&quot;:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Generics:&#39;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">generics</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{:20}{:8}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Ports:&#39;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">ports</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{:20}{:8}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">data_type</span> <span class="p">))</span>
+</pre></div>
+</div>
+<p>When run against the example code produces the following:</p>
+<section id="vhdl-arrays">
+<h3>VHDL arrays<a class="headerlink" href="#vhdl-arrays" title="Permalink to this headline">¶</a></h3>
+<p>It can be useful to know which data types are an array. The <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlExtractor" title="hdlparse.vhdl_parser.VhdlExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">VhdlExtractor</span></code></a> class will
+keep track of all visited array type definitions it sees.
+The <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlExtractor.is_array" title="hdlparse.vhdl_parser.VhdlExtractor.is_array"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_array()</span></code></a> method lets you query the internal list to check if a type
+is for an array.
+All IEEE standard array types are supported by default.
+Any subtypes derived from an array type will also be considered as arrays.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdlparse.vhdl_parser</span> <span class="k">as</span> <span class="nn">vhdl</span>
+
+<span class="n">vhdl_ex</span> <span class="o">=</span> <span class="n">vhdl</span><span class="o">.</span><span class="n">VhdlExtractor</span><span class="p">()</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">package foobar is</span>
+<span class="s1">  type custom_array is array(integer range &lt;&gt;) of boolean;</span>
+<span class="s1">  subtype custom_subtype is custom_array(1 to 10);</span>
+<span class="s1">end package;</span>
+<span class="s1">&#39;&#39;&#39;</span>
+<span class="n">vhdl_comps</span> <span class="o">=</span> <span class="n">vhdl_ex</span><span class="o">.</span><span class="n">extract_objects</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+<span class="c1"># These all return true:</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vhdl_ex</span><span class="o">.</span><span class="n">is_array</span><span class="p">(</span><span class="s1">&#39;unsigned&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vhdl_ex</span><span class="o">.</span><span class="n">is_array</span><span class="p">(</span><span class="s1">&#39;custom_array&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vhdl_ex</span><span class="o">.</span><span class="n">is_array</span><span class="p">(</span><span class="s1">&#39;custom_subtype&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Parsed array data can be saved to a file with <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlExtractor.save_array_types" title="hdlparse.vhdl_parser.VhdlExtractor.save_array_types"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_array_types()</span></code></a> and
+restored with <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlExtractor.load_array_types" title="hdlparse.vhdl_parser.VhdlExtractor.load_array_types"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_array_types()</span></code></a>.
+This lets you parse one set of files for type definitions and use the saved info for parsing other code at a different
+time.</p>
+</section>
+</section>
+<section id="verilog">
+<h2>Verilog<a class="headerlink" href="#verilog" title="Permalink to this headline">¶</a></h2>
+<p>The Verilog parser is only able to extract module definitions with a port and optional parameter list.
+Verilog modules are extracted using the <a class="reference internal" href="#hdlparse.verilog_parser.VerilogExtractor.extract_objects" title="hdlparse.verilog_parser.VerilogExtractor.extract_objects"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extract_objects()</span></code></a> and
+<a class="reference internal" href="#hdlparse.verilog_parser.VerilogExtractor.extract_objects_from_source" title="hdlparse.verilog_parser.VerilogExtractor.extract_objects_from_source"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extract_objects_from_source()</span></code></a> methods.
+The latter is used when you have the code in a string.
+The former when you want to read the Veirlog source from a file.
+When parsing a file, a cache of objects is maintained so you can repeatedly call
+<a class="reference internal" href="#hdlparse.verilog_parser.VerilogExtractor.extract_objects" title="hdlparse.verilog_parser.VerilogExtractor.extract_objects"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extract_objects()</span></code></a> without reparsing the file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+  <span class="n">code</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">vlog_mods</span> <span class="o">=</span> <span class="n">vlog_ex</span><span class="o">.</span><span class="n">extract_objects_from_source</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+<span class="n">vlog_mods</span> <span class="o">=</span> <span class="n">vlog_ex</span><span class="o">.</span><span class="n">extract_objects</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result is a list of extracted <a class="reference internal" href="#hdlparse.verilog_parser.VerilogModule" title="hdlparse.verilog_parser.VerilogModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerilogModule</span></code></a> objects.
+Each instance of this class has <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">generics</span></code>, and <code class="docutils literal notranslate"><span class="pre">ports</span></code> attributes.
+The <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute is the name of the module.
+The <code class="docutils literal notranslate"><span class="pre">generics</span></code> attribute is a list of extracted parameters and <code class="docutils literal notranslate"><span class="pre">ports</span></code> is a list of the ports on the module.</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">newstyle</span> <span class="c1">// This is a new style module def</span>
+<span class="p">#(</span><span class="k">parameter</span> <span class="kt">real</span> <span class="n">foo</span> <span class="o">=</span> <span class="mh">8</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="mh">1</span><span class="p">,</span> <span class="n">baz</span><span class="o">=</span><span class="mh">2</span><span class="p">,</span>
+<span class="k">parameter</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">zip</span> <span class="o">=</span> <span class="mh">100</span><span class="p">)</span>
+<span class="p">(</span>
+  <span class="k">input</span> <span class="n">x</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="k">inout</span> <span class="n">y</span><span class="p">,</span> <span class="n">y2_long_output</span><span class="p">,</span>
+  <span class="k">output</span> <span class="kt">wire</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="n">z</span><span class="p">,</span> <span class="n">z2</span>
+<span class="p">);</span>
+<span class="k">endmodule</span>
+</pre></div>
+</div>
+<p>Each port and generic is an instance of <a class="reference internal" href="#hdlparse.verilog_parser.VerilogParameter" title="hdlparse.verilog_parser.VerilogParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerilogParameter</span></code></a> containing the name, mode
+(input, output, inout), and type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdlparse.verilog_parser</span> <span class="k">as</span> <span class="nn">vlog</span>
+
+<span class="n">vlog_ex</span> <span class="o">=</span> <span class="n">vlog</span><span class="o">.</span><span class="n">VerilogExtractor</span><span class="p">()</span>
+<span class="n">vlog_mods</span> <span class="o">=</span> <span class="n">vlog_ex</span><span class="o">.</span><span class="n">extract_objects</span><span class="p">(</span><span class="s1">&#39;example.v&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">vlog_mods</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Module &quot;</span><span class="si">{}</span><span class="s1">&quot;:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Parameters:&#39;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">generics</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{:20}{:8}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Ports:&#39;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">ports</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{:20}{:8}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>When run against the example code produces the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Module &quot;newstyle&quot;:</span>
+<span class="go">  Parameters:</span>
+<span class="go">        foo                 in      real</span>
+<span class="go">        bar                 in      real</span>
+<span class="go">        baz                 in      real</span>
+<span class="go">        zip                 in      signed [7:0]</span>
+<span class="go">  Ports:</span>
+<span class="go">        x                   input</span>
+<span class="go">        x2                  input</span>
+<span class="go">        y                   inout</span>
+<span class="go">        y2_long_output      inout</span>
+<span class="go">        z                   output  wire [4:1]</span>
+<span class="go">        z2                  output  wire [4:1]</span>
+</pre></div>
+</div>
+</section>
+<section id="module-hdlparse">
+<span id="reference"></span><h2>Reference<a class="headerlink" href="#module-hdlparse" title="Permalink to this headline">¶</a></h2>
+<section id="module-hdlparse.minilexer">
+<span id="hdlparse-minilexer"></span><h3>hdlparse.minilexer<a class="headerlink" href="#module-hdlparse.minilexer" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.minilexer.MiniLexer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.minilexer.</span></span><span class="sig-name descname"><span class="pre">MiniLexer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">RegexFlag.MULTILINE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.minilexer.MiniLexer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple lexer state machine with regex matching rules</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.minilexer.MiniLexer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.minilexer.MiniLexer.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run lexer rules against a source text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to apply lexer to</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>A sequence of lexer matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hdlparse.verilog_parser">
+<span id="hdlparse-verilog-parser"></span><h3>hdlparse.verilog_parser<a class="headerlink" href="#module-hdlparse.verilog_parser" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogExtractor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">VerilogExtractor</span></span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Utility class that caches parsed objects</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogExtractor.extract_objects">
+<span class="sig-name descname"><span class="pre">extract_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogExtractor.extract_objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract objects from a source file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – Name of file to read from</p></li>
+<li><p><strong>type_filter</strong> (<em>class</em><em>, </em><em>optional</em>) – Object class to filter results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of objects extracted from the file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogExtractor.extract_objects_from_source">
+<span class="sig-name descname"><span class="pre">extract_objects_from_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogExtractor.extract_objects_from_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract object declarations from a text buffer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Source code to parse</p></li>
+<li><p><strong>type_filter</strong> (<em>class</em><em>, </em><em>optional</em>) – Object class to filter results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogExtractor.is_array">
+<span class="sig-name descname"><span class="pre">is_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogExtractor.is_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a type is an array type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_type</strong> (<em>str</em>) – Data type</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True when a data type is an array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogModule">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">VerilogModule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.verilog_parser.VerilogObject" title="hdlparse.verilog_parser.VerilogObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.verilog_parser.VerilogObject</span></code></a></p>
+<p>Module definition</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogObject">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">VerilogObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for parsed Verilog objects</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.VerilogParameter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">VerilogParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.VerilogParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Parameter and port to a module</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.is_verilog">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">is_verilog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.is_verilog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify file as Verilog by its extension</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – File name to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True when file has a Verilog extension.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.parse_verilog">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">parse_verilog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.parse_verilog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a text buffer of Verilog code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Source code to parse</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.verilog_parser.parse_verilog_file">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.verilog_parser.</span></span><span class="sig-name descname"><span class="pre">parse_verilog_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.verilog_parser.parse_verilog_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a named Verilog file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – File to parse.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-hdlparse.vhdl_parser">
+<span id="hdlparse-vhdl-parser"></span><h3>hdlparse.vhdl_parser<a class="headerlink" href="#module-hdlparse.vhdl_parser" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlComponent">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Component declaration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the component</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – Package containing the component</p></li>
+<li><p><strong>ports</strong> (<em>list of VhdlParameter</em>) – Port parameters to the component</p></li>
+<li><p><strong>generics</strong> (<em>list of VhdlParameter</em>) – Generic parameters to the component</p></li>
+<li><p><strong>sections</strong> (<em>list of str</em>) – Metacomment sections</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlComponent.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlComponent.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlConstant">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlConstant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlConstant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Constant definition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the constant</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – Package containing the constant</p></li>
+<li><p><strong>base_type</strong> (<em>str</em>) – Type fo the constant</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Utility class that caches parsed objects and tracks array type definitions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>array_types</strong> (<em>set</em>) – Initial array types</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor.extract_objects">
+<span class="sig-name descname"><span class="pre">extract_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor.extract_objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract objects from a source file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – File to parse</p></li>
+<li><p><strong>type_filter</strong> (<em>class</em><em>, </em><em>optional</em>) – Object class to filter results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor.extract_objects_from_source">
+<span class="sig-name descname"><span class="pre">extract_objects_from_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor.extract_objects_from_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract object declarations from a text buffer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Source code to parse</p></li>
+<li><p><strong>type_filter</strong> (<em>class</em><em>, </em><em>optional</em>) – Object class to filter results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor.is_array">
+<span class="sig-name descname"><span class="pre">is_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor.is_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a type is a known array type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_type</strong> (<em>str</em>) – Name of type to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if <code class="docutils literal notranslate"><span class="pre">data_type</span></code> is a known array type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor.load_array_types">
+<span class="sig-name descname"><span class="pre">load_array_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor.load_array_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load file of previously extracted data types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – Name of file to load array database from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor.register_array_types_from_sources">
+<span class="sig-name descname"><span class="pre">register_array_types_from_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor.register_array_types_from_sources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add array type definitions from a file list to internal registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source_files</strong> (<em>list of str</em>) – Files to parse for array definitions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlExtractor.save_array_types">
+<span class="sig-name descname"><span class="pre">save_array_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlExtractor.save_array_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save array type registry to a file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – Name of file to save array database to</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlFunction">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Function declaration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the function</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – Package containing the function</p></li>
+<li><p><strong>parameters</strong> (<em>list of VhdlParameter</em>) – Parameters to the function</p></li>
+<li><p><strong>return_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of the return value</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlObject">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for parsed VHDL objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the object</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlPackage">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlPackage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlPackage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Package declaration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the package</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlParameter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Parameter to subprograms, ports, and generics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the object</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Direction mode for the parameter</p></li>
+<li><p><strong>data_type</strong> (<em>str</em>) – Type name for the parameter</p></li>
+<li><p><strong>default_value</strong> (<em>str</em>) – Default value of the parameter</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlProcedure">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlProcedure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlProcedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Procedure declaration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the procedure</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – Package containing the procedure</p></li>
+<li><p><strong>parameters</strong> (<em>list of VhdlParameter</em>) – Parameters to the procedure</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlSubtype">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlSubtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlSubtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Subtype definition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the subtype</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – Package containing the subtype</p></li>
+<li><p><strong>base_type</strong> (<em>str</em>) – Base type name derived from</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.VhdlType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">VhdlType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_of</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.VhdlType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hdlparse.vhdl_parser.VhdlObject" title="hdlparse.vhdl_parser.VhdlObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">hdlparse.vhdl_parser.VhdlObject</span></code></a></p>
+<p>Type definition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the type</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – Package containing the type</p></li>
+<li><p><strong>type_of</strong> (<em>str</em>) – Object type of this type definition</p></li>
+<li><p><strong>desc</strong> (<em>str</em><em>, </em><em>optional</em>) – Description from object metacomments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.is_vhdl">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">is_vhdl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.is_vhdl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify file as VHDL by its extension</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – File name to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True when file has a VHDL extension.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.parse_vhdl">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">parse_vhdl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.parse_vhdl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a text buffer of VHDL code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Source code to parse</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.parse_vhdl_file">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">parse_vhdl_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.parse_vhdl_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a named VHDL file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – Name of file to parse</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Parsed objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.subprogram_prototype">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">subprogram_prototype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.subprogram_prototype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a canonical prototype string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vo</strong> (<a class="reference internal" href="#hdlparse.vhdl_parser.VhdlFunction" title="hdlparse.vhdl_parser.VhdlFunction"><em>VhdlFunction</em></a><em>, </em><a class="reference internal" href="#hdlparse.vhdl_parser.VhdlProcedure" title="hdlparse.vhdl_parser.VhdlProcedure"><em>VhdlProcedure</em></a>) – Subprogram object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Prototype string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hdlparse.vhdl_parser.subprogram_signature">
+<span class="sig-prename descclassname"><span class="pre">hdlparse.vhdl_parser.</span></span><span class="sig-name descname"><span class="pre">subprogram_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hdlparse.vhdl_parser.subprogram_signature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a signature string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vo</strong> (<a class="reference internal" href="#hdlparse.vhdl_parser.VhdlFunction" title="hdlparse.vhdl_parser.VhdlFunction"><em>VhdlFunction</em></a><em>, </em><a class="reference internal" href="#hdlparse.vhdl_parser.VhdlProcedure" title="hdlparse.vhdl_parser.VhdlProcedure"><em>VhdlProcedure</em></a>) – Subprogram object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Signature string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting.html" class="btn btn-neutral float-left" title="Getting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="genindex.html" class="btn btn-neutral float-right" title="Index" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, Kevin Thibedeau and contributors.</p>
+  </div>Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/buildthedocs/sphinx.theme">theme</a>
+    provided by <a href="https://buildthedocs.github.io">Build the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
