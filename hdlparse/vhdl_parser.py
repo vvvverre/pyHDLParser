@@ -92,7 +92,7 @@ vhdl_tokens = {
         (r'--.*\n', None),
     ],
     'architecture': [
-        (r'end\s+\w+\s*;', 'end_arch', '#pop'),
+        (r'end\s+(architecture\s+)?\w+\s*;', 'end_arch', '#pop'),
         (r'/\*', 'block_comment', 'block_comment'),
         (r'type\s+(\w+)\s*is', 'type', 'type_decl'),
         (r'component\s+(\w+)\s*is', 'component', 'component'),
