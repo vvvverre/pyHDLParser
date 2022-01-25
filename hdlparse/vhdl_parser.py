@@ -12,6 +12,7 @@ from hdlparse.minilexer import MiniLexer
 
 vhdl_tokens = {
     'root': [
+        (r'library\s+(\w+)\s*;', 'library'),
         (r'package\s+(\w+)\s+is', 'package', 'package'),
         (r'package\s+body\s+(\w+)\s+is', 'package_body', 'package_body'),
         (r'function\s+(\w+|"[^"]+")\s*\(', 'function', 'param_list'),
@@ -328,6 +329,22 @@ class VhdlFunction(VhdlObject):
         return f"VhdlFunction('{self.name}')"
 
 
+class VhdlLibrary(VhdlObject):
+    """Library declaration
+
+    Args:
+      name (str): Name of the function
+      desc (str, optional): Description from object metacomments
+    """
+
+    def __init__(self, name, desc=None):
+        VhdlObject.__init__(self, name, desc)
+        self.kind = 'library'
+
+    def __repr__(self):
+        return f"VhdlLibrary('{self.name}')"
+
+
 class VhdlProcedure(VhdlObject):
     """Procedure declaration
 
@@ -628,6 +645,13 @@ def parse_vhdl(text):
             for i in last_items:
                 if not i.param_desc:
                     i.param_desc = groups[0]
+
+        elif action == 'library':
+            vobj = VhdlLibrary(groups[0])
+            objects.append(vobj)
+            kind = None
+            name = None
+            metacomments = []
 
     return objects
 
