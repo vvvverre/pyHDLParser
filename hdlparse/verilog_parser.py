@@ -88,7 +88,7 @@ class VerilogParameter:
         return param
 
     def __repr__(self):
-        return "VerilogParameter('{}')".format(self.name)
+        return f"VerilogParameter('{self.name}')"
 
 
 class VerilogModule(VerilogObject):
