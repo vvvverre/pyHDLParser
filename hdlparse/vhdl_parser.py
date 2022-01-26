@@ -40,7 +40,7 @@ vhdl_tokens = {
         (r'function\s+(\w+)', 'function', 'simple_func'),
         (r'component\s+(\w+)\s*(is)?', 'component', 'component'),
         (r'subtype\s+(\w+)\s+is\s+(\w+)', 'subtype'),
-        (r'constant\s+(\w+)\s+:\s+(\w+)', 'constant'),
+        (r'constant\s+(\w+)\s*:\s+(\w+)(?:\s*:=\s*(\'.\'|[^\s;)]+))?', 'constant'),
         (r'type\s+(\w+)\s*is', 'type', 'type_decl'),
         (r'end\s+\w+\s*;', None, '#pop'),
         (r'--#(.*)\n', 'metacomment'),
@@ -105,6 +105,29 @@ vhdl_tokens = {
         (r'/\*', 'block_comment', 'block_comment'),
         (r'type\s+(\w+)\s*is', 'type', 'type_decl'),
         (r'component\s+(\w+)\s*(is)?', 'component', 'component'),
+        (r'signal\s+', 'signal', 'signal'),
+        (r'constant\s+(\w+)\s*:\s+(\w+)(?:\s*:=\s*(\'.\'|[^\s;)]+))?', 'constant'),
+        (r'--.*\n', None),
+    ],
+    'signal': [
+        (r'\s*(\w+)\s*', 'signal_param'),
+        (r'\s*,\s*', None),
+        (r'\s*:\s*', None, 'signal_param_type'),
+        (r'--#(.*)\n', 'metacomment'),
+        (r'/\*', 'block_comment', 'block_comment'),
+        (r'--.*\n', None),
+    ],
+    'signal_param_type': [
+        (r'\s*(\w+)\s*\(', 'signal_array_param_type', 'array_range'),
+        (r'\s*(\w+)[ \t\r\f\v]*', 'signal_param_type'),
+        (r'\s*;\s*', 'end_signal', '#pop:2'),
+        (r"\s*:=\s*([\w']+)", 'signal_param_default'),
+        (r'\)\s*;\s*--(.*)\n', 'line_comment', '#pop:2'),
+        (r'\n\s*\)\s*;\s*--(.*)\n', 'signal_list_comment', '#pop:2'),
+        (r'\n\s*', None),
+        (r'\)\s*;', 'end_signal', '#pop:2'),
+        (r'--#(.*)\n', 'metacomment'),
+        (r'/\*', 'block_comment', 'block_comment'),
         (r'--.*\n', None),
     ],
     'generic_list': [
@@ -139,7 +162,7 @@ vhdl_tokens = {
     'port_param_type': [
         (r'\s*(in|out|inout|buffer)\s+(\w+)\s*\(', 'port_array_param_type', 'array_range'),
         (r'\s*(in|out|inout|buffer)\s+(\w+)[ \t\r\f\v]*', 'port_param_type'),
-        (r'\s*;\s*', None, '#pop'),
+        (r'\s*;\s*', 'end_port_param', '#pop'),
         (r"\s*:=\s*([\w']+)", 'port_param_default'),
         (r'--(.*)\n', 'line_comment'),
         (r'\)\s*;\s*--(.*)\n', 'line_comment', '#pop:2'),
@@ -238,6 +261,13 @@ class VhdlParameterType:
         self.l_bound = l_bound.strip()
         self.arange = arange
 
+    def __str__(self):
+        s = f"{self.name}"
+        if self.arange:
+            s += f"({self.arange})"
+
+        return s
+
     def __repr__(self):
         return f"VhdlParameterType('{self.name}','{self.arange}')"
 
@@ -302,17 +332,48 @@ class VhdlConstant(VhdlObject):
       name (str): Name of the constant
       package (str): Package containing the constant
       base_type (str): Type fo the constant
+      value (str): Value of the constant
       desc (str, optional): Description from object metacomments
     """
 
-    def __init__(self, name, package, base_type, desc=None):
+    def __init__(self, name, base_type, value, package=None, desc=None):
         VhdlObject.__init__(self, name, desc)
         self.kind = 'constant'
         self.package = package
         self.base_type = base_type
+        self.value = value
+
+    def __str__(self):
+        return f"constant {self.name}: {self.base_type} := {self.value}"
 
     def __repr__(self):
-        return f"VhdlConstant('{self.name}', '{self.base_type}')"
+        return f"VhdlConstant('{self.name}', '{self.base_type}', '{self.value}')"
+
+
+class VhdlSignal(VhdlObject):
+    """Signal definition
+
+    Args:
+      name (str): Name of the constant
+      base_type (str): Type fo the constant
+      default_value (str, optional): default value of the signal
+      desc (str, optional): Description from object metacomments
+    """
+
+    def __init__(self, name, data_type, default_value=None, desc=None):
+        VhdlObject.__init__(self, name, desc)
+        self.kind = 'signal'
+        self.default_value = default_value
+        self.data_type = data_type
+
+    def __str__(self):
+        s = f"signal {self.name}: {self.data_type}"
+        if self.default_value:
+            s += f" := {self.default_value}"
+        return s
+
+    def __repr__(self):
+        return f"VhdlSignal('{self.name}', '{self.data_type}')"
 
 
 class VhdlFunction(VhdlObject):
@@ -410,11 +471,13 @@ class VhdlEntity(VhdlObject):
       desc (str, optional): Description from object metacomments
     """
 
-    def __init__(self, name, ports, generics=None, sections=None, desc=None):
+    def __init__(self, name, ports, generics=None, signals=None, constants=None, sections=None, desc=None):
         VhdlObject.__init__(self, name, desc)
         self.kind = 'entity'
         self.generics = generics if generics is not None else []
         self.ports = ports
+        self.signals = signals if signals is not None else []
+        self.constants = constants if constants is not None else []
         self.sections = sections if sections is not None else {}
 
     def __repr__(self):
@@ -422,8 +485,25 @@ class VhdlEntity(VhdlObject):
 
     def dump(self):
         print(f"VHDL entity: {self.name}")
-        for p in self.ports:
-            print(f"\t{p.name} ({type(p.name)}), {p.data_type} ({type(p.data_type)})")
+        if len(self.generics) > 0:
+            print("\tGenerics:")
+            for g in self.generics:
+                print(f"\t\t{g};")
+
+        if len(self.ports) > 0:
+            print("\tPorts:")
+            for p in self.ports:
+                print(f"\t\t{p};")
+
+        if len(self.signals) > 0:
+            print("\tSignals:")
+            for s in self.signals:
+                print(f"\t\t{s};")
+
+        if len(self.constants) > 0:
+            print("\tConstants:")
+            for c in self.constants:
+                print(f"\t\t{c};")
 
 
 class VhdlComponent(VhdlObject):
@@ -451,8 +531,15 @@ class VhdlComponent(VhdlObject):
 
     def dump(self):
         print(f"VHDL component: {self.name}")
-        for p in self.ports:
-            print(f"\t{p.name} ({type(p.name)}), {p.data_type} ({type(p.data_type)})")
+        if len(self.generics) > 0:
+            print("\tGenerics:")
+            for g in self.generics:
+                print(f"\t\t{g};")
+
+        if len(self.ports) > 0:
+            print("\tPorts:")
+            for p in self.ports:
+                print(f"\t\t{p};")
 
 
 def parse_vhdl_file(fname):
@@ -483,6 +570,7 @@ def parse_vhdl(text):
     saved_type = None
     end_param_group = False
     cur_package = None
+    default_value = None
 
     metacomments = []
     parameters = []
@@ -491,6 +579,8 @@ def parse_vhdl(text):
     generics = []
     ports = []
     sections = []
+    signals = []
+    constants = []
     port_param_index = 0
     last_items = []
     array_range_start_pos = 0
@@ -566,6 +656,8 @@ def parse_vhdl(text):
             name = groups[0]
             generics = []
             ports = []
+            signals = []
+            constants = []
             param_items = []
             sections = []
             port_param_index = 0
@@ -579,6 +671,10 @@ def parse_vhdl(text):
             sections = []
             port_param_index = 0
 
+        elif action == 'signal':
+            param_items = []
+            default_value = None
+
         elif action == 'generic_param':
             param_items.append(groups[0])
 
@@ -586,6 +682,7 @@ def parse_vhdl(text):
             ptype = groups[0]
             last_items = []
             for i in param_items:
+
                 p = VhdlParameter(i, 'in', VhdlParameterType(ptype))
                 generics.append(p)
                 last_items.append(p)
@@ -602,29 +699,16 @@ def parse_vhdl(text):
 
         elif action == 'port_param_type':
             mode, ptype = groups
-
-            last_items = []
-            for i in param_items:
-                p = VhdlParameter(i, mode, VhdlParameterType(ptype))
-                ports.append(p)
-                last_items.append(p)
-
-            param_items = []
+            direction = ""
+            r_bound = ""
+            l_bound = ""
+            arange = ""
 
         elif action == 'port_param_default':
             for i in last_items:
                 i.default_value = groups[0]
 
-        elif action == 'port_array_param_type':
-            mode, ptype = groups
-            array_range_start_pos = pos[1]
-
-        elif action == 'array_range_val':
-            l_bound, direction, r_bound = groups
-
-        elif action == 'array_range_end':
-            arange = text[array_range_start_pos:pos[0] + 1]
-
+        elif action == 'end_port_param' or action == 'end_port':
             last_items = []
             for i in param_items:
                 p = VhdlParameter(i, mode, VhdlParameterType(ptype, direction, r_bound, l_bound, arange))
@@ -633,8 +717,35 @@ def parse_vhdl(text):
 
             param_items = []
 
+        elif action == 'port_array_param_type':
+            mode, ptype = groups
+            array_range_start_pos = pos[1]
+
+        elif action == 'signal_param':
+            param_items.append(groups[0])
+
+        elif action == 'signal_param_type':
+            ptype = groups[0]
+            direction = ""
+            r_bound = ""
+            l_bound = ""
+            arange = ""
+
+        elif action == 'signal_array_param_type':
+            ptype = groups[0]
+            array_range_start_pos = pos[1]
+
+        elif action == 'signal_param_default':
+            default_value = groups[0]
+
+        elif action == 'array_range_val':
+            l_bound, direction, r_bound = groups
+
+        elif action == 'array_range_end':
+            arange = text[array_range_start_pos:pos[0] + 1]
+
         elif action == 'end_entity':
-            vobj = VhdlEntity(name, ports, generics, dict(sections), metacomments)
+            vobj = VhdlEntity(name, ports, generics, signals, constants, dict(sections), metacomments)
             objects.append(vobj)
             last_items = []
             metacomments = []
@@ -642,6 +753,17 @@ def parse_vhdl(text):
         elif action == 'end_component':
             vobj = VhdlComponent(name, cur_package, ports, generics, dict(sections), metacomments)
             objects.append(vobj)
+            last_items = []
+            metacomments = []
+
+        elif action == 'end_signal':
+            for i in param_items:
+                s = VhdlSignal(i, VhdlParameterType(ptype, direction, r_bound, l_bound, arange))
+                s.default_value = default_value
+                signals.append(s)
+
+            param_items = []
+
             last_items = []
             metacomments = []
 
@@ -670,8 +792,11 @@ def parse_vhdl(text):
             metacomments = []
 
         elif action == 'constant':
-            vobj = VhdlConstant(groups[0], cur_package, groups[1], metacomments)
-            objects.append(vobj)
+            vobj = VhdlConstant(groups[0], groups[1], groups[2], cur_package, metacomments)
+            if cur_package is None:
+                constants.append(vobj)
+            else:
+                objects.append(vobj)
             kind = None
             name = None
             metacomments = []
