@@ -65,9 +65,9 @@ class MiniLexer(object):
             for pat, action, new_state in patterns:
                 m = pat.match(text, pos)
                 if m:
-                    if action:
-                        log.debug(f"Match: {m.group().strip()} -> {action}")
+                    log.debug(f"Match '{m.group().strip()}': {action}; {stack[-1]} -> {new_state}")
 
+                    if action:
                         yield (pos, m.end() - 1), action, m.groups()
 
                     pos = m.end()

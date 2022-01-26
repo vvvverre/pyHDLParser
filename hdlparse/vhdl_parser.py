@@ -5,10 +5,17 @@ import ast
 import io
 import os
 import re
+import logging
 from pprint import pprint
 from hdlparse.minilexer import MiniLexer
 
 """VHDL documentation parser"""
+
+log = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+log.addHandler(handler)
+
 
 vhdl_tokens = {
     'root': [
@@ -693,6 +700,9 @@ def parse_vhdl(text):
             kind = None
             name = None
             metacomments = []
+
+        else:
+            log.info(f"Unknown action '{action}'")
 
     return objects
 
