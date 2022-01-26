@@ -13,6 +13,7 @@ from hdlparse.minilexer import MiniLexer
 vhdl_tokens = {
     'root': [
         (r'library\s+(\w+)\s*;', 'library'),
+        (r'use\s+(\w+)(?:\.(\w+))(?:\.(\w+))?;', 'package_import'),
         (r'package\s+(\w+)\s+is', 'package', 'package'),
         (r'package\s+body\s+(\w+)\s+is', 'package_body', 'package_body'),
         (r'function\s+(\w+|"[^"]+")\s*\(', 'function', 'param_list'),
@@ -345,6 +346,33 @@ class VhdlLibrary(VhdlObject):
         return f"VhdlLibrary('{self.name}')"
 
 
+class VhdlPackageImport(VhdlObject):
+    """Package import
+
+    Args:
+      library (str): Name of the library (can be None)
+      name (str): Name of the package
+      suffix (str): The final element of the use clause
+      desc (str, optional): Description from object metacomments
+    """
+
+    def __init__(self, library, name, suffix, desc=None):
+        VhdlObject.__init__(self, name, desc)
+        self.kind = 'import'
+        self.library = library
+        self.suffix = suffix
+
+    @property
+    def indexed_name(self):
+        if self.library:
+            return f"{self.library}.{self.name}.{self.suffix}"
+        else:
+            return f"{self.name}.{self.suffix}"
+
+    def __repr__(self):
+        return f"VhdlPackageImport('{self.indexed_name}')"
+
+
 class VhdlProcedure(VhdlObject):
     """Procedure declaration
 
@@ -648,6 +676,19 @@ def parse_vhdl(text):
 
         elif action == 'library':
             vobj = VhdlLibrary(groups[0])
+            objects.append(vobj)
+            kind = None
+            name = None
+            metacomments = []
+
+        elif action == 'package_import':
+            library, name, suffix = groups
+            if not suffix:
+                suffix = name
+                name = library
+                library = ""
+
+            vobj = VhdlPackageImport(library, name, suffix)
             objects.append(vobj)
             kind = None
             name = None
